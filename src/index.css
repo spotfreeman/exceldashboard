@@ -9,12 +9,12 @@
   --bg-tertiary: #e2e8f0;
   /* Slate 200 */
 
-  --text-primary: #0f172a;
-  /* Slate 900 */
-  --text-secondary: #475569;
-  /* Slate 600 */
-  --text-muted: #94a3b8;
-  /* Slate 400 */
+  --text-primary: #020617;
+  /* Almost Black (Slate 950) */
+  --text-secondary: #334155;
+  /* Dark Slate 700 - Much darker than before */
+  --text-muted: #64748b;
+  /* Slate 500 - Readable grey, not invisible */
 
   --accent-primary: #2563eb;
   /* Blue 600 (Slightly darker for light mode contrast) */
@@ -212,7 +212,8 @@ body {
 
 /* Update default table styles for light mode compatibility */
 th {
-  color: var(--text-secondary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700;
 }
 
 td {
