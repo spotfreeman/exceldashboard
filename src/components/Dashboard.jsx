@@ -7,7 +7,7 @@ import { ProjectDetail } from './ProjectDetail';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-export function Dashboard({ data, title = "Resumen General" }) {
+export function Dashboard({ data, title = "Resumen General", type = "obras" }) {
     const [filterCol, setFilterCol] = useState('');
     const [filterVal, setFilterVal] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -129,7 +129,22 @@ export function Dashboard({ data, title = "Resumen General" }) {
         // Custom View Logic for Hospital Report
         const hasHospitalColumns = columns.includes('SERVICIO DE SALUD') && columns.includes('NOMBRE DEL PROYECTO');
 
-        if (hasHospitalColumns) {
+        if (type === 'data') {
+            // "Data" View: Strict specific columns
+            // "Código BIP", "Proyecto", "Servicio de Salud"
+            const desiredCols = [
+                columns.find(c => c.toUpperCase().includes('BIP') || c.toUpperCase().includes('CÓDIGO')),
+                columns.find(c => c.toLowerCase().includes('proyecto') || c.toLowerCase().includes('obra')),
+                columns.find(c => c.toLowerCase().includes('servicio') && c.toLowerCase().includes('salud')),
+            ];
+
+            // Filter out undefined if a column isn't found
+            tableColumns = desiredCols.filter(Boolean);
+
+            // If strictly nothing found, fallback to all, but usually we prefer showing nothing if strict
+            if (tableColumns.length === 0) tableColumns = columns;
+
+        } else if (hasHospitalColumns) {
             // Aggregation Logic
             const aggregated = {};
             const allClassifications = new Set();

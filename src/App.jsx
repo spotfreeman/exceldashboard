@@ -41,6 +41,11 @@ function App() {
       title: 'Histórico Notas de Cambio (Hospitales 2022)',
       allowedSheets: ['2_Notas de Cambio', 'Notas de Cambio', 'Hoja1'],
       description: 'Análisis de aumentos, disminuciones y obras extraordinarias.'
+    },
+    'data': {
+      title: 'Visualización Masiva de Datos',
+      allowedSheets: ['Data', 'Datos', 'Hoja1', 'Sheet1'],
+      description: 'Vista simplificada para grandes volúmenes de datos.'
     }
   };
 
@@ -113,6 +118,19 @@ function App() {
             >
               ✨ Notas de Cambio
             </button>
+            <button
+              className={`btn ${activeTab === 'data' ? '' : 'text-muted'}`}
+              onClick={() => switchTab('data')}
+              style={{
+                background: activeTab === 'data' ? 'var(--accent-primary)' : 'transparent',
+                color: activeTab === 'data' ? 'white' : 'var(--text-secondary)',
+                border: activeTab === 'data' ? 'none' : '1px solid transparent',
+                padding: '0.5rem 1rem',
+                fontSize: '0.9rem'
+              }}
+            >
+              🗄️ Data
+            </button>
           </div>
 
           {/* Right Side: Compact File Upload / Status */}
@@ -139,7 +157,7 @@ function App() {
         {data && (
           <div className="animate-fade-in">
             {/* We can eventually pass a 'type' prop to Dashboard to customize it */}
-            <Dashboard data={data} title={tabConfig[activeTab].title} />
+            <Dashboard data={data} title={tabConfig[activeTab].title} type={activeTab} />
           </div>
         )}
 
