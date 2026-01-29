@@ -361,22 +361,22 @@ export function Dashboard({ data, title = "Resumen General" }) {
                                         {isHealthService ? (
                                             // Vertical Bars (Column Chart) Configuration
                                             <BarChart data={config.data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.5} vertical={false} />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" opacity={0.5} vertical={false} />
                                                 <XAxis
                                                     dataKey="name"
-                                                    stroke="#475569"
-                                                    fontSize={11}
+                                                    stroke="#0f172a"
+                                                    tick={{ fill: '#334155', fontSize: 11, fontWeight: 500 }}
                                                     angle={-45}
                                                     textAnchor="end"
                                                     height={60}
                                                     interval={0}
                                                 />
-                                                <YAxis stroke="#475569" fontSize={10} />
+                                                <YAxis stroke="#0f172a" tick={{ fill: '#334155', fontSize: 10, fontWeight: 500 }} />
                                                 <Tooltip
                                                     cursor={{ fill: 'var(--bg-tertiary)', opacity: 0.4 }}
                                                     contentStyle={{
                                                         backgroundColor: 'var(--bg-secondary)',
-                                                        borderColor: 'var(--bg-tertiary)',
+                                                        borderColor: 'var(--text-primary)',
                                                         borderRadius: 'var(--radius-md)',
                                                         color: 'var(--text-primary)',
                                                         boxShadow: 'var(--card-shadow)'
@@ -385,29 +385,28 @@ export function Dashboard({ data, title = "Resumen General" }) {
                                                 />
                                                 <Bar dataKey="value" fill={COLORS[idx % COLORS.length]} radius={[4, 4, 0, 0]} barSize={40}>
                                                     {config.data.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={COLORS[idx % COLORS.length]} />
+                                                        <Cell key={`cell-${index}`} fill={COLORS[idx % COLORS.length]} stroke="#000" strokeWidth={0} />
                                                     ))}
                                                 </Bar>
                                             </BarChart>
                                         ) : (
                                             // Standard Horizontal Bars Configuration (Existing)
                                             <BarChart data={config.data} layout="vertical" margin={{ left: 0, right: 30, top: 0, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.5} horizontal={false} />
-                                                <XAxis type="number" stroke="#475569" fontSize={10} hide />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" opacity={0.5} horizontal={false} />
+                                                <XAxis type="number" stroke="#0f172a" tick={{ fill: '#334155', fontSize: 10 }} />
                                                 <YAxis
                                                     type="category"
                                                     dataKey="name"
-                                                    stroke="#475569"
-                                                    fontSize={11}
-                                                    width={100}
-                                                    tickFormatter={(val) => val.length > 15 ? `${val.substring(0, 12)}...` : val}
-                                                    tick={{ fill: '#475569' }}
+                                                    stroke="#0f172a"
+                                                    tick={{ fill: '#334155', fontSize: 11, fontWeight: 500 }}
+                                                    width={150}
+                                                    interval={0}
                                                 />
                                                 <Tooltip
                                                     cursor={{ fill: 'var(--bg-tertiary)', opacity: 0.4 }}
                                                     contentStyle={{
                                                         backgroundColor: 'var(--bg-secondary)',
-                                                        borderColor: 'var(--bg-tertiary)',
+                                                        borderColor: 'var(--text-primary)',
                                                         borderRadius: 'var(--radius-md)',
                                                         color: 'var(--text-primary)',
                                                         boxShadow: 'var(--card-shadow)'
