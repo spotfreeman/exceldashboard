@@ -447,20 +447,76 @@ export function Dashboard({ data, title = "Resumen General", type = "obras" }) {
                         const itemsPerPage = 10;
                         const sourceData = analysis.tableData || filteredData;
 
-                        // --- QUICK FILTER LOGIC (CARTERA) ---
+                        // --- QUICK FILTER LOGIC ---
+                        // 1. Cartera
                         const carteraCol = analysis.allColumns.find(c => c.toUpperCase().includes('CARTERA'));
-
-                        // Let's render the buttons if the column exists
                         let uniqueCarteras = [];
                         if (carteraCol) {
                             uniqueCarteras = [...new Set(data.map(d => d[carteraCol]))].filter(Boolean).sort();
                         }
 
+                        // 2. Servicios de Salud
+                        const servicioCol = analysis.allColumns.find(c => c.toUpperCase().includes('SERVICIO') && c.toUpperCase().includes('SALUD'));
+                        let uniqueServicios = [];
+                        if (servicioCol) {
+                            uniqueServicios = [...new Set(data.map(d => d[servicioCol]))].filter(Boolean).sort();
+                        }
+
                         const isCarteraActive = filterCol === carteraCol;
+                        const isServicioActive = filterCol === servicioCol;
 
                         const totalPages = Math.ceil(sourceData.length / itemsPerPage);
                         const startIndex = (currentPage - 1) * itemsPerPage;
                         const currentData = sourceData.slice(startIndex, startIndex + itemsPerPage);
+
+                        // Helper to render filter buttons
+                        const renderFilterButtons = (items, colName, isActive, label) => {
+                            if (!items || items.length === 0 || items.length > 50) return null; // Limit to 50
+                            return (
+                                <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <span className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, minWidth: '80px' }}>{label}:</span>
+                                    <button
+                                        className="btn"
+                                        onClick={() => resetFilter()}
+                                        style={{
+                                            padding: '0.25rem 0.75rem',
+                                            fontSize: '0.75rem', // Smaller font
+                                            borderRadius: '1rem',
+                                            background: (!isActive && !filterCol) ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                                            color: (!isActive && !filterCol) ? 'white' : 'var(--text-secondary)',
+                                            cursor: 'pointer',
+                                            border: 'none',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        Todos
+                                    </button>
+                                    {items.map(val => (
+                                        <button
+                                            key={val}
+                                            className="btn"
+                                            onClick={() => {
+                                                setFilterCol(colName);
+                                                setFilterVal(val);
+                                                setCurrentPage(1);
+                                            }}
+                                            style={{
+                                                padding: '0.25rem 0.75rem',
+                                                fontSize: '0.75rem',
+                                                borderRadius: '1rem',
+                                                background: (isActive && filterVal === val) ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                                                color: (isActive && filterVal === val) ? 'white' : 'var(--text-secondary)',
+                                                border: '1px solid transparent',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {val}
+                                        </button>
+                                    ))}
+                                </div>
+                            );
+                        };
 
                         return (
                             <div className="card">
@@ -469,51 +525,12 @@ export function Dashboard({ data, title = "Resumen General", type = "obras" }) {
                                         <TableIcon size={20} className="text-muted" />
                                         <span>Detalle de Datos ({sourceData.length} registros)</span>
                                     </h3>
+                                </div>
 
-                                    {/* QUICK FILTERS FOR CARTERA */}
-                                    {uniqueCarteras.length > 0 && uniqueCarteras.length <= 10 && (
-                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                            <button
-                                                className="btn"
-                                                onClick={() => resetFilter()}
-                                                style={{
-                                                    padding: '0.25rem 0.75rem',
-                                                    fontSize: '0.8rem',
-                                                    borderRadius: '1rem',
-                                                    background: !isCarteraActive ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-                                                    color: !isCarteraActive ? 'white' : 'var(--text-secondary)',
-                                                    cursor: 'pointer',
-                                                    border: 'none',
-                                                    fontWeight: 500
-                                                }}
-                                            >
-                                                Todos
-                                            </button>
-                                            {uniqueCarteras.map(cartera => (
-                                                <button
-                                                    key={cartera}
-                                                    className="btn"
-                                                    onClick={() => {
-                                                        setFilterCol(carteraCol);
-                                                        setFilterVal(cartera);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                    style={{
-                                                        padding: '0.25rem 0.75rem',
-                                                        fontSize: '0.8rem',
-                                                        borderRadius: '1rem',
-                                                        background: (isCarteraActive && filterVal === cartera) ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-                                                        color: (isCarteraActive && filterVal === cartera) ? 'white' : 'var(--text-secondary)',
-                                                        border: '1px solid transparent',
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                >
-                                                    {cartera}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
+                                {/* QUICK FILTER ROWS */}
+                                <div style={{ marginBottom: '1rem' }}>
+                                    {renderFilterButtons(uniqueServicios, servicioCol, isServicioActive, "Servicios")}
+                                    {renderFilterButtons(uniqueCarteras, carteraCol, isCarteraActive, "Cartera")}
                                 </div>
                                 <div style={{ overflowX: 'auto', marginBottom: '1rem' }}>
                                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
@@ -553,41 +570,45 @@ export function Dashboard({ data, title = "Resumen General", type = "obras" }) {
                                 </div>
 
                                 {/* Pagination Controls */}
-                                {totalPages > 1 && (
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
-                                        <button
-                                            className="btn"
-                                            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', opacity: currentPage === 1 ? 0.5 : 1 }}
-                                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                            disabled={currentPage === 1}
-                                        >
-                                            Anterior
-                                        </button>
-                                        <span className="text-muted" style={{ fontSize: '0.9rem' }}>
-                                            Página {currentPage} de {totalPages}
-                                        </span>
-                                        <button
-                                            className="btn"
-                                            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', opacity: currentPage === totalPages ? 0.5 : 1 }}
-                                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                            disabled={currentPage === totalPages}
-                                        >
-                                            Siguiente
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                                {
+                                    totalPages > 1 && (
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+                                            <button
+                                                className="btn"
+                                                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', opacity: currentPage === 1 ? 0.5 : 1 }}
+                                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                                disabled={currentPage === 1}
+                                            >
+                                                Anterior
+                                            </button>
+                                            <span className="text-muted" style={{ fontSize: '0.9rem' }}>
+                                                Página {currentPage} de {totalPages}
+                                            </span>
+                                            <button
+                                                className="btn"
+                                                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                Siguiente
+                                            </button>
+                                        </div>
+                                    )
+                                }
+                            </div >
                         );
                     })()}
                 </>
             )}
             {/* Project Details Modal */}
-            {selectedProject && (
-                <ProjectDetail
-                    project={selectedProject}
-                    onClose={() => setSelectedProject(null)}
-                />
-            )}
-        </div>
+            {
+                selectedProject && (
+                    <ProjectDetail
+                        project={selectedProject}
+                        onClose={() => setSelectedProject(null)}
+                    />
+                )
+            }
+        </div >
     );
 }
